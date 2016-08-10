@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
 
 /**
  * Created by Ethan on 8/10/2016.
@@ -51,8 +52,12 @@ public class Window {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (fileChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
-                    String name = fileChooser.getSelectedFile().getName();
-                    mg.loadNewKMLMap(name);
+                    String name = fileChooser.getSelectedFile().getAbsolutePath();
+                    try {
+                        mg.loadNewKMLMap(name);
+                    } catch (FileNotFoundException e1) {
+                        e1.printStackTrace();
+                    }
                     System.out.println("Selected file as kml: " + name);
                 }
             }

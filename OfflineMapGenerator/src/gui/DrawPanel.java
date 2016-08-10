@@ -34,10 +34,23 @@ public class DrawPanel extends JPanel {
     }
 
     public void drawLine(Line line) {
+        drawList.add(line);
+    }
 
+    public void update() {
+        repaint();
+    }
+
+    public void clearLines() {
+        drawList.clear();
     }
 
     private void line(Vector2i start, Vector2i end, Graphics2D g2, Color c) {
+        Color oldcolor = g2.getColor();
+        g2.setColor(c);
 
+        g2.drawLine(start.x, start.y, end.x, end.y);
+
+        g2.setColor(oldcolor);
     }
 }
