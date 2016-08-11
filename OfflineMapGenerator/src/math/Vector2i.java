@@ -22,6 +22,11 @@ public class Vector2i {
         this(0, 0);
     }
 
+    public Vector2i(Vector2d vec) {
+        this.x = (int)Math.round(vec.x);
+        this.y = (int)Math.round(vec.y);
+    }
+
     public static Vector2i add(Vector2i a, Vector2i b) {
         return new Vector2i(a.x + b.x, a.y + b.y);
     }
@@ -40,5 +45,10 @@ public class Vector2i {
 
     public float mag() {
         return (float)Math.sqrt(mag2());
+    }
+
+    public void scale(int scaleX, int scaleY) {
+        this.x *= scaleX;
+        this.y *= scaleY;
     }
 }

@@ -24,6 +24,7 @@ public class Window {
         this.mg = mg;
 
         fileChooser = new JFileChooser();
+        fileChooser.setPreferredSize(new Dimension(800, 600));
 
         frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -58,7 +59,6 @@ public class Window {
                     } catch (FileNotFoundException e1) {
                         e1.printStackTrace();
                     }
-                    System.out.println("Selected file as kml: " + name);
                 }
             }
         });
