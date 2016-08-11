@@ -39,4 +39,9 @@ public class Vector2d {
     public double mag() {
         return Math.sqrt(mag2());
     }
+
+    public String toString() {
+        return "Vector[" + x +", " + y + "]";
+    }
+
 }

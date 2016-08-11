@@ -19,4 +19,8 @@ public class Line {
     public Vector2i getEnd() {
         return new Vector2i(end);
     }
+
+    public String toString() {
+        return "Line: " + start + "<->" + end;
+    }
 }

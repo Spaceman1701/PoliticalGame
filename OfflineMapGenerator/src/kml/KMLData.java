@@ -1,7 +1,6 @@
 package kml;
 
 
-import de.micromata.opengis.kml.v_2_2_0.Kml;
 import kml.feature.Boundary;
 import kml.feature.Feature;
 import kml.feature.Polygon;
@@ -119,7 +118,7 @@ public class KMLData {
 
 
         for (int i = 0; i < polygons.getLength(); i++) {
-            feature.addPolygon(parsePolygon((Element)polygons.item(0)));
+            feature.addPolygon(parsePolygon((Element)polygons.item(i)));
         }
 
         return feature;

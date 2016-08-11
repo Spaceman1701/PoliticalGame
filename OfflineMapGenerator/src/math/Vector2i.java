@@ -22,6 +22,11 @@ public class Vector2i {
         this(0, 0);
     }
 
+    public Vector2i(double x, double y) {
+        this.x = (int)Math.round(x);
+        this.y = (int)Math.round(y);
+    }
+
     public Vector2i(Vector2d vec) {
         this.x = (int)Math.round(vec.x);
         this.y = (int)Math.round(vec.y);
@@ -50,5 +55,9 @@ public class Vector2i {
     public void scale(int scaleX, int scaleY) {
         this.x *= scaleX;
         this.y *= scaleY;
+    }
+
+    public String toString() {
+        return "Vector[" + x +", " + y + "]";
     }
 }
