@@ -14,58 +14,71 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Created by Ethan on 8/10/2016.
  */
 public class MapGenerator {
-    public static final int RES_X = 800;
-    public static final int RES_Y = 800;
+    public static final int RES_X = 1280;
+    public static final int RES_Y = 720;
+
+    private static final String STATE_MAP_LOCATION = "res/state_map.kml";
 
     private Window win;
 
+    private ArrayList<KMLData> kmlMaps;
+
     public MapGenerator() {
         win = new Window(RES_X, RES_Y, this);
+        kmlMaps = new ArrayList<>();
+        loadStateMap();
     }
 
-    public void loadNewKMLMap(String location) throws FileNotFoundException {
-        File file = new File(location);
-        System.out.println("Selected file as kml: " + location);
-        if (!file.exists()) {
-            throw new FileNotFoundException(location);
+    private void loadStateMap() {
+        try {
+            KMLData stateMap = KMLData.loadKML(new File(STATE_MAP_LOCATION));
+            ArrayList<State> states = new ArrayList<>();
+            for (Feature f : stateMap.getFeatures()) {
+                states.add(new State(f.getName(), Integer.parseInt((String)f.getField("STATEFP").getValue())));
+            }
+            drawKMl(stateMap);
+
+        } catch (Exception e) {
+            System.err.println("problem with state map!");
+            e.printStackTrace();
+            System.exit(-1);
         }
+    }
+
+    public void drawKMl(KMLData kml) {
+        for (Feature f : kml.getFeatures()) {
+            for (Polygon p : f.getPolygons()) {
+                Boundary b = p.getOuterBoundary();
+                for (int i = 0; i < b.getVerticies().length; i+=1) {
+                    Vector2i start = projectGeography(b.getVerticies()[i]);
+
+                    Vector2i end = null;
+
+                    if (i + 1 < b.getVerticies().length) {
+                        end = projectGeography(b.getVerticies()[i + 1]);
+                    } else {
+                        end = projectGeography(b.getVerticies()[0]);
+                    }
+                    Line l = new Line(start, Vector2i.add(end, new Vector2i(0, 0)));
+                    win.getDrawPanel().drawLine(l);
+                }
+            }
+        }
+        win.getDrawPanel().update();
+    }
+
+    public void loadNewKMLMap(File file) {
+        System.out.println("Selected file as kml: " + file.getAbsolutePath());
         try {
             KMLData d = KMLData.loadKML(file);
-
-            int a = 0;
-            for (Feature f : d.getFeatures()) {
-
-                for (Polygon p : f.getPolygons()) {
-
-                    Boundary b = p.getOuterBoundary();
-                    System.out.println(b.getVerticies().length);
-                    for (int i = 0; i < b.getVerticies().length; i+=2) {
-                        Vector2i start = projectGeography(b.getVerticies()[i]);
-
-                        Vector2i end = null;
-
-                        if (i + 1 < b.getVerticies().length) {
-                            end = projectGeography(b.getVerticies()[i + 1]);
-                        } else {
-                            end = projectGeography(b.getVerticies()[0]);
-                        }
-                        if (i < 5000000) {
-                            Line l = new Line(start, Vector2i.add(end, new Vector2i(0, 0)));
-                            Line l2 = new Line(start, Vector2i.add(start, new Vector2i(1, 1)));
-                            //win.getDrawPanel().drawLine(l);
-                            win.getDrawPanel().drawLine(l);
-                        }
-                    }
-                }
-                a++;
-            }
-
-            win.getDrawPanel().update();
+            kmlMaps.add(d);
+            drawKMl(d);
         } catch (Exception e) {
             System.err.println("Error reading KML");
             e.printStackTrace();
@@ -82,12 +95,14 @@ public class MapGenerator {
         double xRangeOld = -50 + 130;
         double yRangeOld = 50 - 20;
 
-        double xRangeNew = 800;
-        double yRangeNew = 400;
+        double xRangeNew = 1280;
+        double yRangeNew = 640;
 
         double newX = (((point.x - xMin) * xRangeNew) / xRangeOld);
         double newY = (-(((point.y - yMin) * yRangeNew) / yRangeOld)) + yRangeNew;
 
+        newY += 40;
+        newX += 150;
         //newX = point.x + 400;
         //newY = point.y + 400;
 

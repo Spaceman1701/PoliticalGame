@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileNotFoundException;
 
 /**
@@ -25,6 +26,7 @@ public class Window {
 
         fileChooser = new JFileChooser();
         fileChooser.setPreferredSize(new Dimension(800, 600));
+        fileChooser.setMultiSelectionEnabled(true);
 
         frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -53,11 +55,8 @@ public class Window {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (fileChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
-                    String name = fileChooser.getSelectedFile().getAbsolutePath();
-                    try {
-                        mg.loadNewKMLMap(name);
-                    } catch (FileNotFoundException e1) {
-                        e1.printStackTrace();
+                    for (File file : fileChooser.getSelectedFiles()) {
+                        mg.loadNewKMLMap(file);
                     }
                 }
             }

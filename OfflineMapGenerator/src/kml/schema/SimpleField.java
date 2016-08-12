@@ -20,4 +20,8 @@ public class SimpleField {
     public SimpleType getType() {
         return type;
     }
+
+    public String toString() {
+        return value.toString();
+    }
 }
