@@ -29,6 +29,8 @@ public class MapGenerator {
 
     private ArrayList<KMLData> kmlMaps;
 
+    private FullMap nation;
+
     public MapGenerator() {
         win = new Window(RES_X, RES_Y, this);
         kmlMaps = new ArrayList<>();
@@ -39,10 +41,25 @@ public class MapGenerator {
         try {
             KMLData stateMap = KMLData.loadKML(new File(STATE_MAP_LOCATION));
             ArrayList<State> states = new ArrayList<>();
+            int state = 0;
+            int dc = 0;
+            int territory = 0;
             for (Feature f : stateMap.getFeatures()) {
                 states.add(new State(f.getName(), Integer.parseInt((String)f.getField("STATEFP").getValue())));
+                StateType type = State.getTypeFromName(f.getName());
+                if (type == StateType.STATE) {
+                    state++;
+                } else if (type == StateType.UNICORPORATED) {
+                    territory++;
+                } else {
+                    dc++;
+                }
             }
+
+            System.out.println(state +" States, " + territory +" Territories, " + dc +" Washington DCs");
             drawKMl(stateMap);
+
+            nation = new FullMap(states);
 
         } catch (Exception e) {
             System.err.println("problem with state map!");
@@ -55,7 +72,7 @@ public class MapGenerator {
         for (Feature f : kml.getFeatures()) {
             for (Polygon p : f.getPolygons()) {
                 Boundary b = p.getOuterBoundary();
-                for (int i = 0; i < b.getVerticies().length; i+=1) {
+                for (int i = 0; i < b.getVerticies().length - 1; i+=1) {
                     Vector2i start = projectGeography(b.getVerticies()[i]);
 
                     Vector2i end = null;
