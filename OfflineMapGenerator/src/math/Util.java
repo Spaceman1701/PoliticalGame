@@ -8,7 +8,39 @@ import java.util.Comparator;
 /**
  * Created by Ethan on 8/15/2016.
  */
-public class LineIntersection {
+public class Util {
+
+    public static boolean pointInsidePolygon(Vector2d point, Vector2d[] polygon, BoundingBox bb) {
+        double minX = bb.getMin().x;
+
+        Vector2d scanStart = new Vector2d(minX - 1, point.y);
+
+        int numIntersects = 0;
+        for (int i = 0; i < polygon.length; i++) {
+            Vector2d start = polygon[i];
+            Vector2d end = null;
+
+            if (i + 1 < polygon.length) {
+                end = polygon[i  + 1];
+            } else {
+                end = polygon[0];
+            }
+
+            if (isIntersection(scanStart, point, start, end)) {
+                numIntersects++;
+            }
+        }
+
+        if (numIntersects == 0) {
+            return false;
+        }
+        if (numIntersects % 2 == 0) {
+            return false;
+        }
+        return true;
+    }
+
+
     //This is a really really really really REALLY crappy way to do line intersection. Even the
     //clockwise sorting is crappy... optimise this first. I cannot understate how crappy this is.
     //It might be the worst solution to this problem ever
@@ -36,6 +68,7 @@ public class LineIntersection {
         return null;
     }
 
+    //Convert to polar coordinates to do lazy sort
     public static boolean isIntersection(Vector2d ps1, Vector2d pe1, Vector2d ps2, Vector2d pe2) {
         Vector2d center = Vector2d.add(Vector2d.add(ps1, pe1), Vector2d.add(ps2, pe2));
         center.mul(0.25d);
