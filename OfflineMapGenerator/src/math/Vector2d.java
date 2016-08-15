@@ -24,7 +24,7 @@ public class Vector2d {
         return new Vector2d(a.x + b.x, a.y + b.y);
     }
 
-    public static Vector2d sub(Vector2f a, Vector2f b) {
+    public static Vector2d sub(Vector2d a, Vector2d b) {
         return new Vector2d(a.x - b.x, a.y - b.y);
     }
 
@@ -42,6 +42,13 @@ public class Vector2d {
 
     public String toString() {
         return "Vector[" + x +", " + y + "]";
+    }
+
+    public Vector2d mul(double mul) {
+        x *= mul;
+        y *= mul;
+
+        return this;
     }
 
 }

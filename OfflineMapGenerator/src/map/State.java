@@ -37,7 +37,7 @@ public class State {
 
         for (String territory : TERRITORIES) {
             if (name.equals(territory)) {
-                return StateType.UNICORPORATED;
+                return StateType.UNINCORPORATED;
             }
         }
 

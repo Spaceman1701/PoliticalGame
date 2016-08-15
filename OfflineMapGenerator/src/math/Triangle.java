@@ -25,4 +25,5 @@ public class Triangle {
     public Vector2d getP3() {
         return p3;
     }
+
 }

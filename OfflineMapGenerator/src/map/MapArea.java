@@ -19,4 +19,8 @@ public class MapArea {
     private void trianglulate(Vector2d[] verticies) {
         triangles = new ArrayList<>();
     }
+
+    public List<Triangle> getTriangles() {
+        return triangles;
+    }
 }

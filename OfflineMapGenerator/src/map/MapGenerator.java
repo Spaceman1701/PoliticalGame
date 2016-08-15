@@ -8,12 +8,8 @@ import kml.feature.Polygon;
 import math.Line;
 import math.Vector2d;
 import math.Vector2i;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -49,7 +45,7 @@ public class MapGenerator {
                 StateType type = State.getTypeFromName(f.getName());
                 if (type == StateType.STATE) {
                     state++;
-                } else if (type == StateType.UNICORPORATED) {
+                } else if (type == StateType.UNINCORPORATED) {
                     territory++;
                 } else {
                     dc++;
