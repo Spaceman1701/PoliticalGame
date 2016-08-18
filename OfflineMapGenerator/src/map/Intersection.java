@@ -89,6 +89,10 @@ public class Intersection {
         return new Intersection(null, null, null);
     }
 
+    public static Intersection getIntersectionClipper(Region r1, Region r2) {
+        return null;
+    }
+
 
 
 }
