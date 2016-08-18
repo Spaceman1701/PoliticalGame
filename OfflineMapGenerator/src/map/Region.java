@@ -25,15 +25,19 @@ public class Region {
         return r.boundingBox.intersects(boundingBox);
     }
 
-    public List<Region> getFineCollision(Region r) {
-        return null;
-    }
-
     public void addAssociation(Region r) {
         associations.add(r);
     }
 
     public List<Region> getAssociations() {
         return associations;
+    }
+
+    public Vector2d[] getPolygon() {
+        return polygon;
+    }
+
+    public BoundingBox getBoundingBox() {
+        return boundingBox;
     }
 }

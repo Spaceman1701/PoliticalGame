@@ -64,9 +64,19 @@ public class State {
             for (Region r1 : l1.getRegions()) {
                 for (Region r2 : l2.getRegions()) {
                     if (r1.isRoughCollision(r2)) {
-                        List<Region> result = r1.getFineCollision(r2);
-                        if (result != null && result.size() != 0) {
-                            resultLayer.addRegions(result);
+                        Intersection intersection = Intersection.calculateIntersection(r1, r2);
+                        if (intersection != null && !intersection.isEmpty()) {
+                            for (Region sr : intersection.getSharedSubRegion()) {
+                                sr.addAssociation(r1);
+                                sr.addAssociation(r2);
+                            }
+                            for (Region r1sr : intersection.getR1SubRegion()) {
+                                r1sr.addAssociation(r1);
+                            }
+                            for (Region r2sr : intersection.getR2SubRegion()) {
+                                r2sr.addAssociation(r2);
+                            }
+                            resultLayer.addRegions(intersection.getAllSubRegions());
                             //TODO: Handle associations: the main regions need to know what base regions they are made of
                         }
                     }
