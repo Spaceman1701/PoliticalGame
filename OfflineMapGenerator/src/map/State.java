@@ -22,7 +22,7 @@ public class State {
 
     private final StateType type;
 
-    private List<Layer> layers;
+    private Map<String, Layer> layers;
 
     private Layer baseLayer;
 
@@ -32,19 +32,35 @@ public class State {
 
         type = getTypeFromName(name);
 
-        layers = new ArrayList<>();
+        layers = new HashMap<>();
     }
 
-    public void addLayer(Layer l) {
-        layers.add(l);
+    public String getName() {
+        return name;
+    }
+
+    public Collection<Layer> getLayers() {
+        return layers.values();
+    }
+
+    public boolean hasLayer(String name) {
+        return layers.containsKey(name);
+    }
+
+    public Layer getLayer(String name) {
+        return layers.get(name);
+    }
+
+    public void addLayer(String name, Layer l) {
+        layers.put(name, l);
     }
 
     public void calculateBaseLayer() {
         if (layers.isEmpty()) {
             return;
         }
-        if (layers.size() == 1) {
-            baseLayer = layers.get(0);
+        if (layers.values().size() == 1) {
+            baseLayer = (Layer)layers.values().toArray()[0];
             return;
         }
 
@@ -53,42 +69,57 @@ public class State {
         //create a layer from the results and add it to the queue,
         //repeat until thr queue has only one layer, this ought to be the base layer
 
-        LinkedList<Layer> layersList = new LinkedList<>(layers);
+        LinkedList<Layer> layersList = new LinkedList<>(layers.values());
+        System.out.println(layersList.size());
 
         while (layersList.size() > 1) {
             Layer l1 = layersList.poll();
             Layer l2 = layersList.poll();
+            if (l1 == null || l2 == null) {
+                System.out.println("layers are null");
+            }
+            System.out.println(layersList.size());
 
             Layer resultLayer = new Layer("result");
-
+            int i = 0;
+            int j = 0;
             for (Region r1 : l1.getRegions()) {
+                System.out.println(i + " / " + l1.getRegions().size());
+                i++;
                 for (Region r2 : l2.getRegions()) {
-                    if (r1.isRoughCollision(r2)) {
-                        Intersection intersection = Intersection.calculateIntersection(r1, r2);
+                    System.out.println(j + " / " + l2.getRegions().size());
+                    j++;
+                    if (true) {
+                        //System.out.println("rough collision found");
+                        Intersection intersection = Intersection.calculateIntersectionWE(r1, r2);
                         if (intersection != null && !intersection.isEmpty()) {
+                            //System.out.println("Intersection found!");
                             for (Region sr : intersection.getSharedSubRegion()) {
                                 sr.addAssociation(r1);
                                 sr.addAssociation(r2);
                             }
+                            /*
                             for (Region r1sr : intersection.getR1SubRegion()) {
                                 r1sr.addAssociation(r1);
                             }
                             for (Region r2sr : intersection.getR2SubRegion()) {
                                 r2sr.addAssociation(r2);
                             }
-                            resultLayer.addRegions(intersection.getAllSubRegions());
-                            //TODO: Handle associations: the main regions need to know what base regions they are made of
+                            */
+                            resultLayer.addRegions(intersection.getSharedSubRegion());
                         }
                     }
                 }
             }
 
-            if (resultLayer.getRegions().size() != 0) {
+            //if (resultLayer.getRegions().size() != 0) {
+                //System.out.println("Results layer has regions!");
                 layersList.add(resultLayer);
-            }
+            //}
         }
 
         baseLayer = layersList.get(0);
+        System.out.println(getName() +" done with " + baseLayer.getRegions().size() + " subregions!");
     }
 
 

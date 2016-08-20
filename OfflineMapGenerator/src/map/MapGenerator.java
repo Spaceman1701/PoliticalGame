@@ -20,6 +20,7 @@ public class MapGenerator {
     public static final int RES_Y = 720;
 
     private static final String STATE_MAP_LOCATION = "res/state_map.kml";
+    private static final String STATE_ID = "STATEFP";
 
     private Window win;
 
@@ -31,6 +32,8 @@ public class MapGenerator {
         win = new Window(RES_X, RES_Y, this);
         kmlMaps = new ArrayList<>();
         loadStateMap();
+        loadNewKMLMap(new File("D:\\Data\\Downloads\\cb_2015_us_county_20m\\cb_2015_us_county_20m.kml"));
+        loadNewKMLMap(new File("D:\\Data\\Downloads\\cb_2015_us_cd114_500k\\cb_2015_us_cd114_500k.kml"));
     }
 
     private void loadStateMap() {
@@ -41,7 +44,7 @@ public class MapGenerator {
             int dc = 0;
             int territory = 0;
             for (Feature f : stateMap.getFeatures()) {
-                states.add(new State(f.getName(), Integer.parseInt((String)f.getField("STATEFP").getValue())));
+                states.add(new State(f.getName(), Integer.parseInt((String)f.getField(STATE_ID).getValue())));
                 StateType type = State.getTypeFromName(f.getName());
                 if (type == StateType.STATE) {
                     state++;
@@ -91,6 +94,25 @@ public class MapGenerator {
         try {
             KMLData d = KMLData.loadKML(file);
             kmlMaps.add(d);
+
+            String layerName = file.getName();
+            for (Feature f : d.getFeatures()) {
+                int stateID = Integer.parseInt((String)f.getField(STATE_ID).getValue());
+                State s = nation.getState(stateID);
+                Layer l = null;
+                if (s.hasLayer(layerName)) {
+                     l = s.getLayer(layerName);
+                } else {
+                    l = new Layer(layerName);
+                    s.addLayer(layerName, l);
+                }
+
+                for (Polygon p : f.getPolygons()) {
+                    Region r = new Region(p.getOuterBoundary().getVerticies());
+                    l.addRegion(r);
+                }
+            }
+
             drawKMl(d);
         } catch (Exception e) {
             System.err.println("Error reading KML");
@@ -124,6 +146,17 @@ public class MapGenerator {
 
     public void generateMap() {
         System.out.println("generating map");
+
+        for (State s : nation.getStates()) {
+
+            if (s.getName().equals("Colorado")) {
+                System.out.println("Layers: ");
+                for (Layer l : s.getLayers()) {
+                    System.out.println(l.getName() +", " + l.getRegions().size());
+                }
+                s.calculateBaseLayer();
+            }
+        }
     }
 
     public static void main(String[] args) {

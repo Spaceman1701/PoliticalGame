@@ -44,7 +44,8 @@ public class Util {
     //It might be the worst solution to this problem ever
 
     public static Vector2d getIntersection(Vector2d ps1, Vector2d pe1, Vector2d ps2, Vector2d pe2) {
-        if (isIntersection(ps1, pe1, ps2, pe2)) {
+        if (true) {
+            //System.out.println("THERE IS A SEG INTERSECT");
             double a1 = pe1.y - ps1.y;
             double b1 = ps1.x - pe1.x;
             double c1 = a1 * ps1.x + b1 * ps1.y;

@@ -51,4 +51,15 @@ public class Vector2d {
         return this;
     }
 
+    //No epsilon R/N because I don't really need this method to work in instances when the vector is acctually a different instance...
+    //I know I suck
+    public boolean equals(Object other) {
+        if (other.getClass() == Vector2d.class) {
+            Vector2d vec = (Vector2d) other;
+            return vec.x == x && vec.y == y;
+        }
+
+        return false;
+    }
+
 }
