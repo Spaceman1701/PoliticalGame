@@ -1,5 +1,10 @@
 package map;
 
+import gui.DrawPanel;
+import math.Line;
+import math.Vector2d;
+import math.Vector2i;
+
 import java.util.*;
 
 /**
@@ -15,7 +20,6 @@ public class State {
             "American Samoa",
             "Puerto Rico"
     };
-
 
     private final String name;
     private final int stateId;
@@ -56,6 +60,7 @@ public class State {
     }
 
     public void calculateBaseLayer() {
+        System.out.println("Calculating base layer");
         if (layers.isEmpty()) {
             return;
         }
@@ -81,19 +86,19 @@ public class State {
             System.out.println(layersList.size());
 
             Layer resultLayer = new Layer("result");
-            int i = 0;
-            int j = 0;
+            int regionNum = 0;
+            int regionNum2 = 0;
             for (Region r1 : l1.getRegions()) {
-                System.out.println(i + " / " + l1.getRegions().size());
-                i++;
+                System.out.println(regionNum + " / " + l1.getRegions().size());
+                regionNum++;
                 for (Region r2 : l2.getRegions()) {
-                    System.out.println(j + " / " + l2.getRegions().size());
-                    j++;
+                    System.out.println(regionNum2 + " / " + l2.getRegions().size());
+                    regionNum2++;
                     if (true) {
                         //System.out.println("rough collision found");
-                        Intersection intersection = Intersection.calculateIntersectionWE(r1, r2);
+                        Intersection intersection = Intersection.calculateIntersectionWE2(r1, r2);
                         if (intersection != null && !intersection.isEmpty()) {
-                            //System.out.println("Intersection found!");
+                            System.out.println("Intersection found!");
                             for (Region sr : intersection.getSharedSubRegion()) {
                                 sr.addAssociation(r1);
                                 sr.addAssociation(r2);
@@ -122,6 +127,19 @@ public class State {
         System.out.println(getName() +" done with " + baseLayer.getRegions().size() + " subregions!");
     }
 
+    public void drawState(DrawPanel drawPanel) {
+        if (baseLayer == null) {
+            return;
+        }
+        for (Region r : baseLayer.getRegions()) {
+            for (int i = 0; i < r.getPolygon().length; i++) {
+                Segment s = Segment.getSegment(r.getPolygon(), i);
+                Vector2i start = MapGenerator.projectGeography(s.getStart());
+                Vector2i end = MapGenerator.projectGeography(s.getEnd());
+                drawPanel.drawLine(new Line(start, end));
+            }
+        }
+    }
 
     public int getStateId() {
         return stateId;

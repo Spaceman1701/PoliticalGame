@@ -1,5 +1,6 @@
 package math;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -11,7 +12,7 @@ public class Util {
     public static boolean pointInsidePolygon(Vector2d point, Vector2d[] polygon, BoundingBox bb) {
         double minX = bb.getMin().x;
 
-        Vector2d scanStart = new Vector2d(minX - 1, point.y);
+        Vector2d scanStart = new Vector2d(Integer.MIN_VALUE, point.y);
 
         int numIntersects = 0;
         for (int i = 0; i < polygon.length; i++) {
@@ -24,7 +25,7 @@ public class Util {
                 end = polygon[0];
             }
 
-            if (isIntersection(scanStart, point, start, end)) {
+            if (isIntersectionSimple(scanStart, point, start, end)) {
                 numIntersects++;
             }
         }
@@ -44,15 +45,14 @@ public class Util {
     //It might be the worst solution to this problem ever
 
     public static Vector2d getIntersection(Vector2d ps1, Vector2d pe1, Vector2d ps2, Vector2d pe2) {
-        if (true) {
-            //System.out.println("THERE IS A SEG INTERSECT");
+        if (isIntersectionSimple(ps1, pe1, ps2, pe2)) {
             double a1 = pe1.y - ps1.y;
             double b1 = ps1.x - pe1.x;
             double c1 = a1 * ps1.x + b1 * ps1.y;
 
             double a2 = pe2.y - ps2.y;
             double b2 = ps2.x - pe2.x;
-            double c2 = a2 * ps2.x + a2 * ps2.y;
+            double c2 = a2 * ps2.x + b2 * ps2.y;
 
             double delta = a1 * b2 - a2 * b1;
 
@@ -77,9 +77,17 @@ public class Util {
         Vector2d ps2Ajusted = toPolar(Vector2d.sub(ps2, center));
         Vector2d pe2Ajusted = toPolar(Vector2d.sub(pe2, center));
 
-        Vector2d[] array = {ps1Ajusted, pe1Ajusted, ps2Ajusted, pe2Ajusted};
+        //Vector2d[] array = {ps1Ajusted, pe1Ajusted, ps2Ajusted, pe2Ajusted};
 
+        Vector2d[] array = {ps1, pe1, ps2, pe2};
         Arrays.sort(array, new Comparator<Vector2d>() {
+            @Override
+            public int compare(Vector2d o1, Vector2d o2) {
+                return vectorLess(o1, o2, center);
+            }
+        });
+
+        /*Arrays.sort(array, new Comparator<Vector2d>() {
             @Override
             public int compare(Vector2d o1, Vector2d o2) {
                 double thetaDelta = o1.y - o2.y;
@@ -90,30 +98,70 @@ public class Util {
                     return 1;
                 }
             }
-        });
+        }); */
 
+        boolean output = false;
+        if (array[0] == ps1) {
+            output =  array[2] == pe1;
+        }
+        if (array[0] == pe1) {
+            output =  array[2] == ps1;
+        }
+        if (array[0] == ps2) {
+            output = array[2] == pe2;
+        }
+        if (array[0] == pe2) {
+            output = array[2] == ps2;
+        }
+        System.out.println(output);
+        return output;
 
-        if (array[0] == ps1Ajusted) {
-            return array[2] == pe1Ajusted;
-        }
-        if (array[0] == pe1Ajusted) {
-            return array[2] == ps1Ajusted;
-        }
-        if (array[0] == ps2Ajusted) {
-            return array[2] == pe2Ajusted;
-        }
-        if (array[0] == pe2Ajusted) {
-            return array[2] == ps2Ajusted;
-        }
-
-        throw new RuntimeException("Something's really broken");
+        //throw new RuntimeException("Something's really broken");
     }
 
+    public static boolean isIntersectionSimple(Vector2d a, Vector2d b, Vector2d c, Vector2d d) {
+        return ccw(a, c, d) != ccw(b ,c, d) && ccw(a,b,c) != ccw(a,b,d);
+    }
 
-    private static Vector2d toPolar(Vector2d vec) {
+    private static boolean ccw(Vector2d a, Vector2d b, Vector2d c) {
+        return (c.y-a.y) * (b.x-a.x) > (b.y-a.y) * (c.x-a.x);
+    }
+
+    public static int vectorLess(Vector2d a, Vector2d b, Vector2d cent) {
+        if (a.x - cent.x >= 0 && b.x - cent.x < 0) {
+            return -1;
+        }
+        if (a.x - cent.x < 0 && b.x - cent.x >= 0) {
+            return 1;
+        }
+        if (a.x - cent.x == 0 && b.x - cent.x == 0) {
+            if (a.y - cent.y >= 0 || b.y - cent.y >= 0) {
+                return (int) Math.signum(a.y - b.y);
+            }
+            return (int) Math.signum(b.y - a.y);
+        }
+
+        double det = (a.x - cent.x) * (b.y - cent.y) - (b.x - cent.x) * (a.y - cent.y);
+        if (det < 0) {
+            return -1;
+        }
+        if (det > 0) {
+            return 1;
+        }
+
+        double d1 = Vector2d.sub(a, cent).mag2();
+        double d2 = Vector2d.sub(b, cent).mag2();
+
+        return (int) Math.signum(d1 - d2);
+    }
+
+    public static Vector2d toPolar(Vector2d vec) {
         double r = Math.sqrt(vec.x * vec.x + vec.y * vec.y);
-        double theta = Math.atan(vec.y / vec.x);
+        double theta = Math.atan2(vec.y, vec.x);
 
-        return new Vector2d(r, theta);
+        int ySign = (int)Math.signum(vec.y);
+
+
+        return new Vector2d(r, Math.toDegrees(theta));
     }
 }

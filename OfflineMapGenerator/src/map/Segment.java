@@ -54,4 +54,16 @@ public class Segment {
 
         return intersections;
     }
+
+    public static Segment getSegment(Vector2d[] polygon, int start) {
+        Vector2d s = polygon[start];
+        if (start + 1 < polygon.length) {
+            return new Segment(s, polygon[start + 1]);
+        }
+        return new Segment(s, polygon[0]);
+    }
+
+    public String toString() {
+        return "(" + start +", " + end +")";
+    }
 }

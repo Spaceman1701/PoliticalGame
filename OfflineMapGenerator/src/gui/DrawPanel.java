@@ -14,12 +14,12 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class DrawPanel extends JPanel {
 
-    private List<Line> drawList;
+    private Queue<Line> drawList;
 
     public DrawPanel(int width, int height) {
         setPreferredSize(new Dimension(width, height));
 
-        drawList = new ArrayList<>();
+        drawList = new LinkedBlockingQueue<>();
     }
 
     @Override

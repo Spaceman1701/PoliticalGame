@@ -40,4 +40,12 @@ public class Region {
     public BoundingBox getBoundingBox() {
         return boundingBox;
     }
+
+    public String toString() {
+        StringBuilder b = new StringBuilder();
+        for (Vector2d v : polygon) {
+            b.append(v.toString());
+        }
+        return b.toString();
+    }
 }

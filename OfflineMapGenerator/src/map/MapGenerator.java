@@ -33,7 +33,7 @@ public class MapGenerator {
         kmlMaps = new ArrayList<>();
         loadStateMap();
         loadNewKMLMap(new File("D:\\Data\\Downloads\\cb_2015_us_county_20m\\cb_2015_us_county_20m.kml"));
-        loadNewKMLMap(new File("D:\\Data\\Downloads\\cb_2015_us_cd114_500k\\cb_2015_us_cd114_500k.kml"));
+        loadNewKMLMap(new File("D:\\Data\\Downloads\\cb_2015_us_cd114_20m\\cb_2015_us_cd114_20m.kml"));
     }
 
     private void loadStateMap() {
@@ -120,7 +120,7 @@ public class MapGenerator {
         }
     }
 
-    private Vector2i projectGeography(Vector2d point) {
+    public static Vector2i projectGeography(Vector2d point) {
         double xMin = -130;
         double xMax = -50;
 
@@ -146,15 +146,18 @@ public class MapGenerator {
 
     public void generateMap() {
         System.out.println("generating map");
+        win.getDrawPanel().clearLines();
 
         for (State s : nation.getStates()) {
 
-            if (s.getName().equals("Colorado")) {
+            if (true || s.getName().equals("Colorado")) {
                 System.out.println("Layers: ");
                 for (Layer l : s.getLayers()) {
                     System.out.println(l.getName() +", " + l.getRegions().size());
                 }
                 s.calculateBaseLayer();
+                s.drawState(win.getDrawPanel());
+                win.getDrawPanel().update();
             }
         }
     }
