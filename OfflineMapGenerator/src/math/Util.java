@@ -155,11 +155,11 @@ public class Util {
 
     public static Vector2d toPolar(Vector2d vec) {
         double r = Math.sqrt(vec.x * vec.x + vec.y * vec.y);
-        double theta = Math.atan2(vec.y, vec.x);
+        double theta = Math.atan2(-vec.y, -vec.x);
 
-        int ySign = (int)Math.signum(vec.y);
+        theta = Math.toDegrees(theta) + 180;
 
 
-        return new Vector2d(r, Math.toDegrees(theta));
+        return new Vector2d(r, theta);
     }
 }

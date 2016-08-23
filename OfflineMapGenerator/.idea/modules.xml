@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/JavaClipper/JavaClipper.iml" filepath="$PROJECT_DIR$/JavaClipper/JavaClipper.iml" />
       <module fileurl="file://$PROJECT_DIR$/OfflineMapGenerator.iml" filepath="$PROJECT_DIR$/OfflineMapGenerator.iml" />
     </modules>
   </component>

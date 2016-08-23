@@ -37,7 +37,7 @@ public class TestPolygonIntersection {
         System.out.println();
 
 
-        Intersection intersection = Intersection.calculateIntersectionSM(new Region(p1), new Region(p2));
+        Intersection intersection = Intersection.calculateIntersectionSM(new Region(p2), new Region(p1));
 
         System.out.println(intersection.getSharedSubRegion().size());
         for (Region r : intersection.getSharedSubRegion()) {

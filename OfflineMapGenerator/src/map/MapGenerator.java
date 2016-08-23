@@ -9,8 +9,10 @@ import math.Line;
 import math.Vector2d;
 import math.Vector2i;
 
+import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by Ethan on 8/10/2016.
@@ -32,8 +34,8 @@ public class MapGenerator {
         win = new Window(RES_X, RES_Y, this);
         kmlMaps = new ArrayList<>();
         loadStateMap();
-        loadNewKMLMap(new File("D:\\Data\\Downloads\\cb_2015_us_county_20m\\cb_2015_us_county_20m.kml"));
-        loadNewKMLMap(new File("D:\\Data\\Downloads\\cb_2015_us_cd114_20m\\cb_2015_us_cd114_20m.kml"));
+        loadNewKMLMap(new File("D:\\Data\\Downloads\\cb_2015_us_county_500k (1)\\cb_2015_us_county_500k.kml"));
+        loadNewKMLMap(new File("D:\\Data\\Downloads\\cb_2015_us_cd114_500k\\cb_2015_us_cd114_500k.kml"));
     }
 
     private void loadStateMap() {
@@ -121,14 +123,14 @@ public class MapGenerator {
     }
 
     public static Vector2i projectGeography(Vector2d point) {
-        double xMin = -130;
-        double xMax = -50;
+        double xMin = -130; //-130
+        double xMax = -50; //-50
 
         double yMin = 20;
         double yMax = 50;
 
-        double xRangeOld = -50 + 130;
-        double yRangeOld = 50 - 20;
+        double xRangeOld = xMax - xMin;
+        double yRangeOld = yMax - yMin;
 
         double xRangeNew = 1280;
         double yRangeNew = 640;
@@ -150,7 +152,7 @@ public class MapGenerator {
 
         for (State s : nation.getStates()) {
 
-            if (true || s.getName().equals("Colorado")) {
+            if (true||s.getName().equals("Colorado")) {
                 System.out.println("Layers: ");
                 for (Layer l : s.getLayers()) {
                     System.out.println(l.getName() +", " + l.getRegions().size());
@@ -160,6 +162,8 @@ public class MapGenerator {
                 win.getDrawPanel().update();
             }
         }
+        win.getDrawPanel().setColor(Color.green);
+        drawKMl(kmlMaps.get(1));
     }
 
     public static void main(String[] args) {

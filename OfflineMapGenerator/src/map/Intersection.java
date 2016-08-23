@@ -227,11 +227,12 @@ public class Intersection {
         Vector2d subjectCenter = calculateCenter(subject);
         Vector2d clipCenter = calculateCenter(clip);
 
+
         subject.addAll(segIntersections);
         clip.addAll(segIntersections);
 
-        subject.sort(new ClockwiseComparator2(subjectCenter));
-        clip.sort(new ClockwiseComparator2(clipCenter));
+        subject.sort(new ClockwiseComparator(subjectCenter));
+        clip.sort(new ClockwiseComparator(clipCenter));
 
         List<Vertex> entrentIntersects = getEntrentIntersects(subject, clip, r1, r2);
 
@@ -247,11 +248,11 @@ public class Intersection {
                 vIndex = 0;
             }
             clipped = doClipping(subject, clip, vIndex);
-            clipped.sort(new ClockwiseComparator2(calculateCenter(clipped)));
+            clipped.sort(new ClockwiseComparator(calculateCenter(clipped)));
             outputLists.add(clipped);
         }
 
-        System.out.println(outputLists.size());
+        //System.out.println(outputLists.size());
 
         List<Region> shared = new LinkedList<>();
         for (List<Vertex> polygon : outputLists) {
@@ -349,7 +350,7 @@ public class Intersection {
         return -1;
     }
 
-    private static Vector2d calculateCenter(List<Vertex> polygon) {
+    public static Vector2d calculateCenter(List<Vertex> polygon) {
         Vector2d center = new Vector2d();
 
         for (Vertex v : polygon) {
@@ -358,6 +359,17 @@ public class Intersection {
         }
 
         center.mul(1.0d/polygon.size());
+        return center;
+    }
+
+    public static Vector2d calculateCenter(Vector2d[] polygon) {
+        Vector2d center = new Vector2d();
+
+        for (Vector2d v : polygon) {
+            center = Vector2d.add(center, v);
+        }
+
+        center.mul(1.0d/polygon.length);
         return center;
     }
 

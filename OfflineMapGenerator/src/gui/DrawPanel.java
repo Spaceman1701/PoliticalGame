@@ -16,6 +16,8 @@ public class DrawPanel extends JPanel {
 
     private Queue<Line> drawList;
 
+    private Color color= Color.black;
+
     public DrawPanel(int width, int height) {
         setPreferredSize(new Dimension(width, height));
 
@@ -28,7 +30,7 @@ public class DrawPanel extends JPanel {
         g2.clearRect(0, 0, getWidth(), getHeight());
 
         for (Line l : drawList) {
-            line(l.getStart(), l.getEnd(), g2, Color.BLACK);
+            line(l.getStart(), l.getEnd(), g2, color);
         }
 
     }
@@ -52,5 +54,9 @@ public class DrawPanel extends JPanel {
         g2.drawLine(start.x, start.y, end.x, end.y);
 
         g2.setColor(oldcolor);
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
     }
 }

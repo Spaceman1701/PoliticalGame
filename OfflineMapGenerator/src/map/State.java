@@ -75,7 +75,7 @@ public class State {
         //repeat until thr queue has only one layer, this ought to be the base layer
 
         LinkedList<Layer> layersList = new LinkedList<>(layers.values());
-        System.out.println(layersList.size());
+        //System.out.println(layersList.size());
 
         while (layersList.size() > 1) {
             Layer l1 = layersList.poll();
@@ -83,22 +83,22 @@ public class State {
             if (l1 == null || l2 == null) {
                 System.out.println("layers are null");
             }
-            System.out.println(layersList.size());
+            //System.out.println(layersList.size());
 
             Layer resultLayer = new Layer("result");
             int regionNum = 0;
             int regionNum2 = 0;
             for (Region r1 : l1.getRegions()) {
-                System.out.println(regionNum + " / " + l1.getRegions().size());
+                //System.out.println(regionNum + " / " + l1.getRegions().size());
                 regionNum++;
                 for (Region r2 : l2.getRegions()) {
-                    System.out.println(regionNum2 + " / " + l2.getRegions().size());
+                    //System.out.println(regionNum2 + " / " + l2.getRegions().size());
                     regionNum2++;
                     if (true) {
                         //System.out.println("rough collision found");
-                        Intersection intersection = Intersection.calculateIntersectionSM(r1, r2);
+                        Intersection intersection = Intersection.calculateIntersectionSM(r2, r1);
                         if (intersection != null && !intersection.isEmpty()) {
-                            System.out.println("Intersection found!");
+                            //System.out.println("Intersection found!");
                             for (Region sr : intersection.getSharedSubRegion()) {
                                 sr.addAssociation(r1);
                                 sr.addAssociation(r2);
@@ -132,11 +132,11 @@ public class State {
             return;
         }
         for (Region r : baseLayer.getRegions()) {
-            for (int i = 0; i < r.getPolygon().length; i++) {
+            for (int i = 0; i < r.getPolygon().length; i+=2) {
                 Segment s = Segment.getSegment(r.getPolygon(), i);
                 Vector2i start = MapGenerator.projectGeography(s.getStart());
                 Vector2i end = MapGenerator.projectGeography(s.getEnd());
-                drawPanel.drawLine(new Line(start, end));
+                drawPanel.drawLine(new Line(start, Vector2i.add(start, new Vector2i(1,1))));
             }
         }
     }
