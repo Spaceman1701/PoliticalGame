@@ -19,6 +19,10 @@ public class Intersection {
     private List<Region> r1SubRegion;
     private List<Region> r2SubRegion;
 
+    private enum ClipState {
+        NOT_CLIIPING, CLIPPING_ON_SUBJECT, CLIPPING_ON_CLIP
+    }
+
     private Intersection(List<Region> sharedSubRegion, List<Region> r1SubRegion, List<Region> r2SubRegion) {
         this.sharedSubRegion = sharedSubRegion;
         this.r1SubRegion = r1SubRegion;
@@ -212,6 +216,200 @@ public class Intersection {
 
         return new Intersection(shared, null, null);
 
+    }
+
+    public static Intersection calculateIntersectionSM(Region r1, Region r2) {
+        List<Vertex> subject = getVertexList(r1);
+        List<Vertex> clip = getVertexList(r2);
+
+        List<Vertex> segIntersections = getSegIntersectionsVertex(r1, r2);
+
+        Vector2d subjectCenter = calculateCenter(subject);
+        Vector2d clipCenter = calculateCenter(clip);
+
+        subject.addAll(segIntersections);
+        clip.addAll(segIntersections);
+
+        subject.sort(new ClockwiseComparator2(subjectCenter));
+        clip.sort(new ClockwiseComparator2(clipCenter));
+
+        List<Vertex> entrentIntersects = getEntrentIntersects(subject, clip, r1, r2);
+
+        List<List<Vertex>> outputLists = new LinkedList<>();
+        for (Vertex v : entrentIntersects) {
+            List<Vertex> clipped = new LinkedList<>();
+            clipped.add(v);
+            int vIndex = getIndex(v, subject) + 1;
+            if (vIndex == 0) {
+                throw new RuntimeException("vertex not found!");
+            }
+            if (vIndex >= subject.size()) { //Loop around
+                vIndex = 0;
+            }
+            clipped = doClipping(subject, clip, vIndex);
+            clipped.sort(new ClockwiseComparator2(calculateCenter(clipped)));
+            outputLists.add(clipped);
+        }
+
+        System.out.println(outputLists.size());
+
+        List<Region> shared = new LinkedList<>();
+        for (List<Vertex> polygon : outputLists) {
+            shared.add(vertexListToRegion(polygon));
+        }
+
+        return new Intersection(shared, null, null);
+    }
+
+    private static Region vertexListToRegion(List<Vertex>  v) {
+        Vector2d[] output = new Vector2d[v.size()];
+        for (int i = 0; i < output.length; i++) {
+            output[i] = v.get(i).data;
+        }
+        return new Region(output);
+    }
+
+    private static List<Vertex> doClipping(List<Vertex> subject, List<Vertex> clip, int startIndex) {
+        List<Vertex> output = new LinkedList<>();
+        List<Vertex> clipOutput = null;
+        Iterator<Vertex> iterator = subject.listIterator(startIndex);
+        while(iterator.hasNext()) {
+            Vertex v = iterator.next();
+            output.add(v);
+            if (v.isIntersection) {
+                int vIndex = getIndex(v, clip) + 1;
+                if (vIndex == 0) {
+                    throw new RuntimeException("vertex not found!");
+                }
+                if (vIndex >= clip.size()) { //Loop around
+                    vIndex = 0;
+                }
+                clipOutput = getClipVerticies(clip, vIndex);
+                break; //done here
+            }
+        }
+        if (clipOutput == null) { //didn't find a intersect, means we have to loop around
+            for (Vertex v : subject) {
+                if (v.isIntersection) {
+                    int vIndex = getIndex(v, clip) + 1;
+                    if (vIndex == 0) {
+                        throw new RuntimeException("vertex not found!");
+                    }
+                    if (vIndex >= clip.size()) { //Loop around
+                        vIndex = 0;
+                    }
+                    clipOutput = getClipVerticies(clip, vIndex);
+                    break; //done here
+                }
+            }
+        }
+        if (clipOutput == null) {
+            throw new RuntimeException("never found a second intersect");
+        }
+        output.addAll(clipOutput);
+        return output;
+    }
+
+    private static List<Vertex> getClipVerticies(List<Vertex> clip, int startIndex) {
+        List<Vertex> output = new LinkedList<>();
+        Iterator<Vertex> iterator = clip.listIterator(startIndex);
+
+        boolean found = false;
+        while (iterator.hasNext()) {
+            Vertex v = iterator.next();
+            output.add(v);
+            if (v.isIntersection) {
+                found = true;
+                return output;
+            }
+        }
+        //Didn't end, loop back around
+        for(Vertex v : clip) {
+            output.add(v);
+            if (v.isIntersection) {
+                found = true;
+                return output;
+            }
+        }
+        if (!found) {
+            throw new RuntimeException("never found a vertex");
+        }
+
+        return output;
+    }
+
+    private static int getIndex(Vertex v, List<Vertex> list) {
+        int i = 0;
+        for (Vertex vert : list) {
+            if (vert == v) {
+                return i;
+            }
+            i++;
+        }
+        return -1;
+    }
+
+    private static Vector2d calculateCenter(List<Vertex> polygon) {
+        Vector2d center = new Vector2d();
+
+        for (Vertex v : polygon) {
+            Vector2d vec = v.data;
+            center = Vector2d.add(center, v.data);
+        }
+
+        center.mul(1.0d/polygon.size());
+        return center;
+    }
+
+    private static List<Vertex> getEntrentIntersects(List<Vertex> subject, List<Vertex> clip, Region subjectRegion, Region clipRegion) {
+        List<Vertex> output = new ArrayList<>();
+
+        Vertex previous = subject.get(subject.size() - 1);
+        for (int i = 0; i < subject.size(); i++) {
+            Vertex v = subject.get(i);
+            if (v.isIntersection) {
+                Vector2d next = null;
+                if (i != 0) {
+                    previous = subject.get(i - 1);
+                }
+                if (i != subject.size() - 1) {
+                    next = subject.get(i + 1).data;
+                } else {
+                    next = subject.get(0).data;
+                }
+                boolean startOut = Util.pointInsidePolygon(previous.data, clipRegion.getPolygon(), null);
+                boolean endOut = Util.pointInsidePolygon(next, clipRegion.getPolygon(), null);
+
+                if (!startOut && endOut) {
+                    v.setEntrant(true);
+                    output.add(v);
+                }
+            }
+        }
+
+        return output;
+    }
+
+    private static List<Vertex> getSegIntersectionsVertex(Region r1, Region r2) {
+        List<Vector2d> segIntersects = getSegItersects(r1, r2);
+
+        List<Vertex> output = new ArrayList<>();
+
+        for (Vector2d v : segIntersects) {
+            output.add(new Vertex(v, true));
+        }
+
+        return output;
+    }
+
+    private static List<Vertex> getVertexList(Region r) {
+        List<Vertex> output = new ArrayList<>();
+
+        for (Vector2d v : r.getPolygon()) {
+            output.add(new Vertex(v, false));
+        }
+
+        return output;
     }
 
     private static List<Vector2d> getSegItersects(Region r1, Region r2) {

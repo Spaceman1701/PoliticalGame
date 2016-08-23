@@ -8,6 +8,7 @@ import math.Vector2d;
 public class Vertex {
     public final Vector2d data;
     public final boolean isIntersection;
+    private boolean isEntrant;
 
     public Vertex(Vector2d data, boolean isIntersection) {
         this.data = data;
@@ -20,5 +21,13 @@ public class Vertex {
         }
 
         return false;
+    }
+
+    public boolean isEntrant() {
+        return isEntrant;
+    }
+
+    public void setEntrant(boolean value) {
+        this.isEntrant = value;
     }
 }

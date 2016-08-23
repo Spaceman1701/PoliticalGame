@@ -96,7 +96,7 @@ public class State {
                     regionNum2++;
                     if (true) {
                         //System.out.println("rough collision found");
-                        Intersection intersection = Intersection.calculateIntersectionWE2(r1, r2);
+                        Intersection intersection = Intersection.calculateIntersectionSM(r1, r2);
                         if (intersection != null && !intersection.isEmpty()) {
                             System.out.println("Intersection found!");
                             for (Region sr : intersection.getSharedSubRegion()) {

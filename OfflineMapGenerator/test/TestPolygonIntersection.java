@@ -2,6 +2,7 @@ import map.Intersection;
 import map.Region;
 import map.intersection.SortedVertexList;
 import map.intersection.Vertex;
+import math.Util;
 import math.Vector2d;
 
 /**
@@ -19,6 +20,13 @@ public class TestPolygonIntersection {
             p2[i] = Vector2d.add(new Vector2d(0.5d, 0.5d), p1[i]);
         }
 
+
+        for (double x = 0.1d; x < 0.9d; x++) {
+            for (double y = 0.1d; y < 0.9d; y++) {
+                assert Util.pointInsidePolygon(new Vector2d(x, y), p1, null);
+            }
+        }
+
         SortedVertexList sv = new SortedVertexList();
         sv.addVectors(p1);
         sv.updateCenter();
@@ -29,7 +37,7 @@ public class TestPolygonIntersection {
         System.out.println();
 
 
-        Intersection intersection = Intersection.calculateIntersectionWE2(new Region(p1), new Region(p2));
+        Intersection intersection = Intersection.calculateIntersectionSM(new Region(p1), new Region(p2));
 
         System.out.println(intersection.getSharedSubRegion().size());
         for (Region r : intersection.getSharedSubRegion()) {

@@ -10,8 +10,6 @@ import java.util.Comparator;
 public class Util {
 
     public static boolean pointInsidePolygon(Vector2d point, Vector2d[] polygon, BoundingBox bb) {
-        double minX = bb.getMin().x;
-
         Vector2d scanStart = new Vector2d(Integer.MIN_VALUE, point.y);
 
         int numIntersects = 0;
